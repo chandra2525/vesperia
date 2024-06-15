@@ -8,6 +8,7 @@ import '../../../../../models/request/product_list_request_model.dart';
 import '../../../../../repositories/product_repository.dart';
 import '../../../../../utils/networking_util.dart';
 import '../../../../../widgets/snackbar_widget.dart';
+import 'database_helper_controller.dart';
 
 class ProductListController extends GetxController {
   final ProductRepository _productRepository;
@@ -51,6 +52,8 @@ class ProductListController extends GetxController {
 
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
+  RefreshController refreshFavoriteController =
+      RefreshController(initialRefresh: false);
 
   @override
   void onInit() {
@@ -73,6 +76,7 @@ class ProductListController extends GetxController {
       _products.refresh();
       _isLastPageProduct.value = productList.data.length < _limit;
       _skip = products.length;
+      _syncFavorites();
     } catch (error) {
       SnackbarWidget.showFailedSnackbar(NetworkingUtil.errorMessage(error));
     }
@@ -94,6 +98,7 @@ class ProductListController extends GetxController {
       _products.refresh();
       _isLastPageProduct.value = productList.data.length < _limit;
       _skip = products.length;
+      _syncFavorites();
     } catch (error) {
       SnackbarWidget.showFailedSnackbar(NetworkingUtil.errorMessage(error));
     }
@@ -103,14 +108,45 @@ class ProductListController extends GetxController {
   }
 
   void toProductDetail(ProductModel product) async {
-    Get.toNamed(RouteName.productDetail);
+    // Get.toNamed(RouteName.productDetail);
+
+    Get.toNamed(RouteName.productDetail, arguments: product.id);
+
     // print("product data ${product.categories![0].name}");
 
     // _productDetail.value = productDetail;
     //TODO: finish this implementation by creating product detail page & calling it here
   }
 
-  void setFavorite(ProductModel product) {
+  Future<void> setFavorite(ProductModel product) async {
+    final db = DatabaseHelper();
+    if (product.isFavorite) {
+      await db.deleteFavorite(product.id);
+    } else {
+      await db.insertFavorite({
+        'id': product.id,
+        'name': product.name,
+        'price': product.price,
+        'discountPrice': product.discountPrice,
+        'imageUrl': product.images?.isNotEmpty == true
+            ? product.images![0].urlSmall ?? ''
+            : ''
+      });
+    }
     product.isFavorite = !product.isFavorite;
+  }
+
+  Future<void> _syncFavorites() async {
+    final db = DatabaseHelper();
+    for (var product in _products.value) {
+      product.isFavorite = await db.isFavorite(product.id);
+    }
+    _products.refresh();
+  }
+
+  Future<void> clearFavorites() async {
+    final db = DatabaseHelper();
+    await db.clearFavorites();
+    _syncFavorites();
   }
 }

@@ -9,8 +9,8 @@ import '../../../../constants/icon.dart';
 import '../../../../widgets/empty_list_state_widget.dart';
 import 'component/product_list_controller.dart';
 
-class ProductListPage extends GetWidget<ProductListController> {
-  const ProductListPage({Key? key}) : super(key: key);
+class FavoriteListPage extends GetWidget<ProductListController> {
+  const FavoriteListPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class ProductListPage extends GetWidget<ProductListController> {
                           const Center(
                             child: EmptyListStateWidget(
                               iconSource: ic_empty_data,
-                              text: "No product to show",
+                              text: "No favorite product to show",
                             ),
                           ),
                         ],
@@ -58,7 +58,7 @@ class ProductListPage extends GetWidget<ProductListController> {
           enablePullUp: true,
           // enableTwoLevel: true,
           header: const ClassicHeader(),
-          controller: controller.refreshController,
+          controller: controller.refreshFavoriteController,
           onRefresh: () => controller.getMoreProducts(),
           onLoading: () => controller.getMoreProducts(),
           // onTwoLevel: (isOpen) => controller.getMoreProducts(),
@@ -72,9 +72,11 @@ class ProductListPage extends GetWidget<ProductListController> {
               ),
 
               // shrinkWrap: true,
-              itemCount: controller.products.length,
+              itemCount: controller.products.where((p) => p.isFavorite).length,
               itemBuilder: (context, index) {
-                final product = controller.products[index];
+                final product = controller.products
+                    .where((p) => p.isFavorite)
+                    .toList()[index];
                 return Container(
                   margin: EdgeInsets.only(
                       left: index % 2 == 0 ? 24 : 0,

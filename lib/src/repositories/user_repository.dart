@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../constants/endpoint.dart';
+import '../features/dashboard/products/list/component/product_list_controller.dart';
 import '../models/response/user_response_model.dart';
 import '../utils/networking_util.dart';
 import '../widgets/snackbar_widget.dart';
@@ -78,6 +79,10 @@ class UserRepository {
 
         box.remove('token');
         box.remove('phone');
+        final ProductListController controller =
+            Get.find<ProductListController>();
+        await controller.clearFavorites();
+
         Get.offAllNamed(RouteName.login);
       } else {
         SnackbarWidget.showFailedSnackbar(

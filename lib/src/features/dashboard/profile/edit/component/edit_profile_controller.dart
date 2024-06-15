@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:entrance_test/src/repositories/user_repository.dart';
 import 'package:entrance_test/src/utils/string_ext.dart';
 import 'package:flutter/material.dart';
@@ -146,12 +148,16 @@ class EditProfileController extends GetxController {
     );
   }
 
+  final _profilePicture = Rxn<Uint8List>();
+
   Future<void> pickImage(tipe) async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(
         source: tipe == 'gallery' ? ImageSource.gallery : ImageSource.camera);
 
     if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      _profilePicture.value = bytes;
       _profilePictureUrlOrPath.value = pickedFile.path;
       _isLoadPictureFromPath.value = true;
     } else {
@@ -201,7 +207,7 @@ class EditProfileController extends GetxController {
           etHeight.text,
           etWeight.text,
           etBirthDateSend,
-          _profilePictureUrlOrPath.value);
+          _profilePicture.value);
     } catch (error) {
       SnackbarWidget.showFailedSnackbar(NetworkingUtil.errorMessage(error));
     }

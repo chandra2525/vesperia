@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../src/features/boarding/boarding_page.dart';
 import '../../src/features/boarding/component/boarding_binding.dart';
 import '../../src/features/dashboard/products/detail_product/product_detail_page.dart';
+import '../../src/features/dashboard/products/list/favorite_list_page.dart';
 import '../../src/features/dashboard/profile/edit/component/edit_profile_binding.dart';
 import '../../src/features/login/component/login_binding.dart';
 import '../../src/features/login/login_page.dart';

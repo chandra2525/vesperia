@@ -6,5 +6,6 @@ abstract class RouteName {
 
   static const editProfile = '/profile/edit';
   static const productDetail = '/product/detail';
+  static const productFavorite = '/product/favorite';
   // static const webView = '/webView';
 }
